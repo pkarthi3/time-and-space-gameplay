@@ -1,17 +1,35 @@
 class Level extends Phaser.Scene {
     preload() {
         this.load.path = "assets/";
-        this.load.image("placeholder", "sillyguy.png");
+        this.load.image("placeholder", "sillyguy.png"); //will be replaced with actual main character in final game
         this.load.image("ground", "ground-proto.png");
+        this.load.image("nextAreaPlaceholder", "sparkles.png"); //will be replaced with portal in final game
+        this.load.image("testObject", "coin.png");
     }
     create() {
+
+        let objectsFound = false;
+
         this.player = this.physics.add.image(100, 100, "placeholder");
         this.player.setScale(0.05);
         this.player.setCollideWorldBounds(true);
+        
         this.cursors = this.input.keyboard.createCursorKeys();
+
         this.ground = this.physics.add.image(400, 600, "ground");
         this.ground.body.allowGravity = false;
         this.ground.body.setImmovable(true);
+
+        this.portal = this.physics.add.image(700, 400, "nextAreaPlaceholder");
+        this.portal.setScale(0.1);
+        this.portal.body.allowGravity = false;
+        this.portal.body.setImmovable(true);
+
+        this.testObject = this.physics.add.image(400, 300, "testObject");
+        this.testObject.setScale(0.025);
+        this.testObject.body.allowGravity = false;
+        this.testObject.body.setImmovable(true);
+
         this.leftButton = this.add.text(50, 500, "<");
         this.leftButton.setFontSize(50);
         this.leftButton.setInteractive();
@@ -22,14 +40,14 @@ class Level extends Phaser.Scene {
             this.player.setVelocityX(0);
         })
 
-        this.upButton = this.add.text(150, 500, "^");
+        this.upButton = this.add.text(650, 500, "^");
         this.upButton.setFontSize(50);
         this.upButton.setInteractive();
         this.upButton.on("pointerdown", () => {
             this.player.setVelocityY(-250);
         });
 
-        this.rightButton = this.add.text(250, 500, ">");
+        this.rightButton = this.add.text(150, 500, ">");
         this.rightButton.setInteractive();
         this.rightButton.setFontSize(50);
         this.rightButton.on("pointerdown", () => {
@@ -40,6 +58,32 @@ class Level extends Phaser.Scene {
         })
 
         this.physics.add.collider(this.player, this.ground);
+        this.physics.add.overlap(this.player, this.testObject, () => {
+            objectsFound = true;
+            this.description = this.add.text(100, 100, "(item description in universe)");
+            this.tweens.add({
+                targets: this.description,
+                alpha: 0,
+                duration: 3000,
+                delay: 1000,
+            });
+        });
+        this.physics.add.overlap(this.player, this.portal, () => {
+            if(objectsFound) {
+                this.description = this.add.text(100, 100, "(go to next area, lore is likely shared here)");
+            }
+            else {
+                this.description = this.add.text(100, 100, "before delving deeper, find what you can about the past first");
+            }
+
+            this.tweens.add({
+                targets: this.description,
+                alpha: 0,
+                duration: 3000,
+                delay: 1000,
+            });
+        });
+
 
     }
     update() {
@@ -51,7 +95,15 @@ class Level extends Phaser.Scene {
         else if (right.isDown) {
             this.player.setVelocityX(150);
         }
-        
+
+        left.on("up", () => {
+            this.player.setVelocityX(0);
+        })
+
+        right.on("up", () => {
+            this.player.setVelocityX(0);
+        })
+
 
         if (up.isDown && this.player.body.touching.down) {
             this.player.setVelocityY(-250);
