@@ -6,16 +6,38 @@ class Level extends Phaser.Scene {
     }
     create() {
         this.player = this.physics.add.image(100, 100, "placeholder");
-        this.player.setScale(0.1);
+        this.player.setScale(0.05);
         this.player.setCollideWorldBounds(true);
         this.cursors = this.input.keyboard.createCursorKeys();
         this.ground = this.physics.add.image(400, 600, "ground");
         this.ground.body.allowGravity = false;
         this.ground.body.setImmovable(true);
-        this.leftButton = this.add.text(100, 500, "<");
+        this.leftButton = this.add.text(50, 500, "<");
+        this.leftButton.setFontSize(50);
         this.leftButton.setInteractive();
-        this.rightButton = this.add.text(300, 500, ">");
+        this.leftButton.on("pointerdown", () => {
+            this.player.setVelocityX(-150);
+        })
+        this.leftButton.on("pointerup", () => {
+            this.player.setVelocityX(0);
+        })
+
+        this.upButton = this.add.text(150, 500, "^");
+        this.upButton.setFontSize(50);
+        this.upButton.setInteractive();
+        this.upButton.on("pointerdown", () => {
+            this.player.setVelocityY(-250);
+        });
+
+        this.rightButton = this.add.text(250, 500, ">");
         this.rightButton.setInteractive();
+        this.rightButton.setFontSize(50);
+        this.rightButton.on("pointerdown", () => {
+            this.player.setVelocityX(150);
+        })
+        this.rightButton.on("pointerup", () => {
+            this.player.setVelocityX(0);
+        })
 
         this.physics.add.collider(this.player, this.ground);
 
@@ -29,9 +51,7 @@ class Level extends Phaser.Scene {
         else if (right.isDown) {
             this.player.setVelocityX(150);
         }
-        else {
-            this.player.setVelocityX(0);
-        }
+        
 
         if (up.isDown && this.player.body.touching.down) {
             this.player.setVelocityY(-250);
