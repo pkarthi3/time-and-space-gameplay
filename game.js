@@ -10,9 +10,18 @@ class Level extends Phaser.Scene {
         this.load.image("ground", "ground-proto.png");
         this.load.image("nextAreaPlaceholder", "sparkles.png"); //will be replaced with portal in final game
         this.load.image("testObject", "coin.png");
+        this.load.audio("bgm", "levelbg.wav");
+        this.load.audio("itemFound", "itemfound.wav");
     }
     
     create() {
+
+        this.totalItems = 0;
+        this.itemsFound = 0;
+
+        this.bgm = this.sound.add('bgm');
+        this.bgm.setLoop(true);
+        this.sound.play(this.bgm.key);
 
         this.player = this.physics.add.image(100, 100, "placeholder");
         this.player.setScale(0.05);
@@ -59,6 +68,8 @@ class Level extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.testObject, () => {
             if (this.testObject.found == false) {
                 this.testObject.found = true;
+                this.itemsFound++;
+                this.sound.play('itemFound');
             }
             this.itemdesc = this.add.text(100, 50, this.testObject.description);
             this.tweens.add({
@@ -69,7 +80,7 @@ class Level extends Phaser.Scene {
             });
         });
         this.physics.add.overlap(this.player, this.portal, () => {
-            if(this.testObject.found) {
+            if(this.itemsFound == this.totalItems) {
                 this.portaldesc = this.add.text(100, 100, "(go to next area, lore is likely shared here)");
             }
             else {
@@ -128,6 +139,7 @@ class PastItem extends Phaser.GameObjects.Image {
         this.body.allowGravity = false;
         this.body.setImmovable(true);
         this.found = false;
+        scene.totalItems++;
     }
 }
 
