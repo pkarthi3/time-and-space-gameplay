@@ -1,4 +1,9 @@
 class Level extends Phaser.Scene {
+
+    constructor(key){
+        super(key);
+    }
+
     preload() {
         this.load.path = "assets/";
         this.load.image("placeholder", "sillyguy.png"); //will be replaced with actual main character in final game
@@ -60,24 +65,25 @@ class Level extends Phaser.Scene {
         this.physics.add.collider(this.player, this.ground);
         this.physics.add.overlap(this.player, this.testObject, () => {
             objectsFound = true;
-            this.description = this.add.text(100, 100, "(item description in universe)");
+            this.itemdesc = this.add.text(100, 100, "(item description in universe)");
             this.tweens.add({
-                targets: this.description,
+                targets: this.itemdesc,
                 alpha: 0,
                 duration: 3000,
                 delay: 1000,
             });
         });
         this.physics.add.overlap(this.player, this.portal, () => {
+            this.itemdesc.setAlpha(0);
             if(objectsFound) {
-                this.description = this.add.text(100, 100, "(go to next area, lore is likely shared here)");
+                this.portaldesc = this.add.text(100, 100, "(go to next area, lore is likely shared here)");
             }
             else {
-                this.description = this.add.text(100, 100, "before delving deeper, find what you can about the past first");
+                this.portaldesc = this.add.text(100, 100, "before delving deeper, find what you can about the past first");
             }
 
             this.tweens.add({
-                targets: this.description,
+                targets: this.portaldesc,
                 alpha: 0,
                 duration: 3000,
                 delay: 1000,
@@ -113,6 +119,13 @@ class Level extends Phaser.Scene {
 
 }
 
+class Example extends Level {
+    constructor() {
+        super('example');
+    }
+}
+
+
 
 let config = {
     type: Phaser.AUTO,
@@ -126,7 +139,7 @@ let config = {
             debug: true,
         }
     },
-    scene: [ Level ]
+    scene: [ Example ]
 }
 
 let game = new Phaser.Game(config);
