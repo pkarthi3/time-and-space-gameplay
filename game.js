@@ -11,8 +11,11 @@ class Level extends Phaser.Scene {
         this.load.image("nextAreaPlaceholder", "sparkles.png"); //will be replaced with portal in final game
         this.load.image("testObject", "coin.png");
     }
+    
     create() {
 
+
+        
         let objectsFound = false;
 
         this.player = this.physics.add.image(100, 100, "placeholder");
@@ -35,9 +38,7 @@ class Level extends Phaser.Scene {
         this.testObject.body.allowGravity = false;
         this.testObject.body.setImmovable(true);
 
-        this.leftButton = this.add.text(50, 500, "<");
-        this.leftButton.setFontSize(50);
-        this.leftButton.setInteractive();
+        this.leftButton = this.add.existing(new Button(this, 50, 500, "<"));
         this.leftButton.on("pointerdown", () => {
             this.player.setVelocityX(-150);
         })
@@ -45,22 +46,19 @@ class Level extends Phaser.Scene {
             this.player.setVelocityX(0);
         })
 
-        this.upButton = this.add.text(650, 500, "^");
-        this.upButton.setFontSize(50);
-        this.upButton.setInteractive();
+        this.upButton = this.add.existing(new Button(this, 650, 500, "^"));
         this.upButton.on("pointerdown", () => {
             this.player.setVelocityY(-250);
         });
 
-        this.rightButton = this.add.text(150, 500, ">");
-        this.rightButton.setInteractive();
-        this.rightButton.setFontSize(50);
+        this.rightButton = this.add.existing(new Button(this, 150, 500, ">"));
         this.rightButton.on("pointerdown", () => {
             this.player.setVelocityX(150);
         })
         this.rightButton.on("pointerup", () => {
             this.player.setVelocityX(0);
         })
+
 
         this.physics.add.collider(this.player, this.ground);
         this.physics.add.overlap(this.player, this.testObject, () => {
@@ -90,7 +88,6 @@ class Level extends Phaser.Scene {
             });
         });
 
-
     }
     update() {
         // based off example at https://labs.phaser.io/phaser4-view.html?src=src%5Cphysics%5Carcade%5Cbody%20on%20a%20path.js&return=phaser4-index.html%3Fpath%3Dphysics%252Farcade
@@ -119,10 +116,12 @@ class Level extends Phaser.Scene {
 
 }
 
-class Example extends Level {
-    constructor() {
-        super('example');
-    }
+class Button extends Phaser.GameObjects.Text {
+     constructor(scene, x, y, text) {
+        super(scene, x, y, text);
+        this.setFontSize(50);
+        this.setInteractive();
+     }       
 }
 
 
@@ -139,7 +138,7 @@ let config = {
             debug: true,
         }
     },
-    scene: [ Example ]
+    scene: [ Level ]
 }
 
 let game = new Phaser.Game(config);
