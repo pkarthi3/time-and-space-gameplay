@@ -14,10 +14,6 @@ class Level extends Phaser.Scene {
     
     create() {
 
-
-        
-        let objectsFound = false;
-
         this.player = this.physics.add.image(100, 100, "placeholder");
         this.player.setScale(0.05);
         this.player.setCollideWorldBounds(true);
@@ -33,10 +29,8 @@ class Level extends Phaser.Scene {
         this.portal.body.allowGravity = false;
         this.portal.body.setImmovable(true);
 
-        this.testObject = this.physics.add.image(400, 300, "testObject");
+        this.testObject = this.add.existing(new PastItem(this, 400, 300, 'testObject', '(item description)'));
         this.testObject.setScale(0.025);
-        this.testObject.body.allowGravity = false;
-        this.testObject.body.setImmovable(true);
 
         this.leftButton = this.add.existing(new Button(this, 50, 500, "<"));
         this.leftButton.on("pointerdown", () => {
@@ -60,10 +54,13 @@ class Level extends Phaser.Scene {
         })
 
 
+
         this.physics.add.collider(this.player, this.ground);
         this.physics.add.overlap(this.player, this.testObject, () => {
-            objectsFound = true;
-            this.itemdesc = this.add.text(100, 100, "(item description in universe)");
+            if (this.testObject.found == false) {
+                this.testObject.found = true;
+            }
+            this.itemdesc = this.add.text(100, 50, this.testObject.description);
             this.tweens.add({
                 targets: this.itemdesc,
                 alpha: 0,
@@ -72,8 +69,7 @@ class Level extends Phaser.Scene {
             });
         });
         this.physics.add.overlap(this.player, this.portal, () => {
-            this.itemdesc.setAlpha(0);
-            if(objectsFound) {
+            if(this.testObject.found) {
                 this.portaldesc = this.add.text(100, 100, "(go to next area, lore is likely shared here)");
             }
             else {
@@ -122,6 +118,17 @@ class Button extends Phaser.GameObjects.Text {
         this.setFontSize(50);
         this.setInteractive();
      }       
+}
+
+class PastItem extends Phaser.GameObjects.Image {
+    constructor(scene, x, y, texture, description) {
+        super(scene, x, y, texture);
+        this.description = description;
+        scene.physics.world.enable(this);
+        this.body.allowGravity = false;
+        this.body.setImmovable(true);
+        this.found = false;
+    }
 }
 
 
